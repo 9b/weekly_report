@@ -1,0 +1,99 @@
+html {
+	overflow-Y: scroll;
+}
+
+body {
+	font: 10px normal Arial, Helvetica, sans-serif;
+	margin: 0;
+	padding: 0;
+	line-height: 1.7em;
+	background-color:002e61;
+}
+
+*, * focus {
+	outline: none;
+	margin: 0;
+	padding: 0;
+}
+ 
+.container {
+	width: 1070px;
+	margin: 10 auto;
+	padding: 10px;
+	align: center;
+	margin-left: auto;
+	margin-right: auto;
+}
+
+h1 {
+	font: 20px normal Arial, Helvetica, sans-serif;	
+	color:f9b82a;
+}
+
+h1.title {
+	text-align: center;
+	font: 20px normal Arial, Helvetica, sans-serif;	
+	color:f9b82a;
+}
+
+h1.toolbox {
+	text-align: center;
+	font: 20px normal Arial, Helvetica, sans-serif;	
+	color:002e61;
+}
+
+h1.crutch {
+	float:left;
+}
+
+h2 {
+	font: 16px normal Arial, Helvetica, sans-serif;	
+	color:f9b82a;
+}
+
+h2.white {
+	color:FFFFFF;	
+}
+
+.pie_charts {
+	float:left;
+}
+
+.add-compromise {
+    background-image: url('../img/add.gif') !important;
+}
+
+.remove-compromise {
+    background-image: url('../img/delete.gif') !important;
+}
+
+#visual_alignment {
+	float:left;	
+}
+
+div.floating_menu {
+	position:fixed;
+	background:#f9b82a;
+	border:1px solid #000000;
+	width:200px;
+	z-index:100;
+	padding:5px;
+	margin:15px;
+	visibility:hidden;
+}
+
+div.floating_menu a, div.floating_menu h2 {
+	display:block;
+	margin:0 0.5em;
+	text-align:center;
+}
+
+a.white_link {
+	font: 16px normal Arial, Helvetica, sans-serif;	
+	color:FFFFFF;
+}
+
+#left {
+	float:left;
+	width:50%;
+}

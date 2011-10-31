@@ -1,0 +1,66 @@
+from django.http import HttpResponse
+from django.http import HttpResponseRedirect
+from django.shortcuts import render_to_response, redirect
+from django.core.urlresolvers import reverse
+from django.core.context_processors import csrf
+from django.views.decorators.csrf import csrf_protect
+from django.template import RequestContext
+from django.conf import settings
+from django.core.serializers.json import DjangoJSONEncoder
+from django.utils import simplejson
+from pymongo import Connection
+
+import os
+import simplejson as json
+import pymongo
+import MySQLdb
+import sys
+
+def connect_to_mongo(host, port, database, collection):
+	connection = Connection(host, port)
+	db = connection[database]
+	collection = db[collection]
+	return collection
+	
+def connect_to_mysql(host, user, password, database):
+    try:
+        conn = MySQLdb.connect (host, user, password, database)
+        return conn
+    except MySQLdb.Error, e:
+        print "Error %d: %s" % (e.args[0], e.args[1])
+        sys.exit(1)
+        
+def kill_mysql_connection(conn):
+    conn.commit()
+    conn.close()
+    
+def created_reports(request):
+	out = { 'results':{},'error':{},'session':{}, 'success': False }
+	reports = []
+	con = connect_to_mongo('127.0.0.1',27017, "weekly_report", "complete_reports")
+	for report in con.find({},{"report.metadata":1}):
+		rjson =  json.dumps(report)
+		ruse = json.loads(rjson)
+		id = ruse.get("_id")
+		report = ruse.get("report")
+		metadata = report.get("metadata")
+		start_date = metadata.get("start_week")
+		end_date = metadata.get("end_week")
+		obj = { "id":id,"start_date":start_date,"end_date":end_date }
+		reports.append(obj)
+		
+	out['results'] = reports
+	out['success'] = True
+	return render_to_response('main.html',out,context_instance=RequestContext(request))
+	
+def captured_login(request):
+	out = { 'results':{},'error':{},'session':{}, 'success': False }
+	return render_to_response('login.html',out,context_instance=RequestContext(request))	
+	
+def process_auth(request):
+	return None
+	
+def handle_error(request):
+	json = { 'results':{},'error':{},'session':{},'login':{} }
+	json['error'] = "The page you request doesn't exist"
+	return render_to_response('error.html',json, context_instance=RequestContext(request))
