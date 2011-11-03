@@ -3,6 +3,7 @@ var compromise_details_store;
 var faculty_student_count_store;
 var compromise_type_store;
 var historical_data_store;
+var avg_response_time_store;
 
 function generate_draft(start_date,end_date) {
     // Define our data model
@@ -230,26 +231,29 @@ function generate_draft(start_date,end_date) {
     
     //Chart Definition
     
-    Ext.define('WeeklyReport.Visual.Reporting.Chart.Patchlink.Model', {
+    Ext.define('WeeklyReport.Visual.Reporting.Chart.ResponseTime.Model', {
         extend: 'Ext.data.Model',
         fields: [
             'name',
             'value',
+            'key'
         ]
     });
     
-    var patchy_count_store = Ext.create('Ext.data.Store', {
-        model: 'WeeklyReport.Visual.Reporting.Chart.Patchlink.Model',
+    avg_response_time_store = Ext.create('Ext.data.Store', {
+        model: 'WeeklyReport.Visual.Reporting.Chart.ResponseTime.Model',
         autoLoad: true,
 
         proxy: {
             type: 'ajax',
             api: {
-//                read: 'controls/drafting/get_patchlink_counts.php?start_date='+ start_date + '&end_date='+end_date,
+            	read: '/get_average_response_time_counts/?start_date='+ start_date + '&end_date='+end_date,
+            	create: '/set_average_response_times/',
+            	update: '/set_average_response_times/'
             },
             reader: {
                 type: 'json',
-                root: 'data',
+                root: 'results',
                 successProperty: 'success'
             }
         },
@@ -258,52 +262,28 @@ function generate_draft(start_date,end_date) {
 			direction: 'ASC'
     	}]
     });
+    
+    var imageTpl = new Ext.XTemplate(
+		'<tpl for=".">',
+        	'<h1 class="response_content">{value} Hours</h1>',
+	    '</tpl>'
+	);
+    
+    var average_response_time = new Ext.create('Ext.view.View', {
+        store: avg_response_time_store,
+        tpl: imageTpl,
+        itemSelector: 'div.thumb-wrap',
+        emptyText: 'No images available',
+    });
 
     var panel1 = Ext.create('widget.panel', {
         width: 350,
-        height: 350,
+        height: 450,
         collapsible: true,
         renderTo: 'pie_chart_one',
         layout: 'fit',
-        title: "Patchy/Non-Patchy",
-        items: {
-            xtype: 'chart',
-            id: 'pie_chart_one',
-            animate: true,
-            store: patchy_count_store,
-            shadow: true,
-            insetPadding: 60,
-            theme: 'Base:gradients',
-            series: [{
-                type: 'pie',
-                field: 'value',
-                showInLegend: false,
-                tips: {
-                  trackMouse: true,
-                  width: 140,
-                  height: 28,
-                  renderer: function(storeItem, item) {
-                    //calculate percentage.
-                    var total = 0;
-                    patchy_count_store.each(function(rec) {
-                        total += rec.get('value');
-                    });
-                    this.setTitle(storeItem.get('name') + ': ' + Math.round(storeItem.get('value') / total * 100) + '%');
-                  }
-                },
-                highlight: {
-                  segment: {
-                    margin: 20
-                  }
-                },
-                label: {
-                    field: 'name',
-                    display: 'rotate',
-                    contrast: true,
-                    font: '18px Arial'
-                }
-            }]
-        }
+        title: 'Average Response Time',
+        items: [average_response_time]
     });
     
     Ext.define('WeeklyReport.Visual.Reporting.Chart.StudentFaculty.Model', {
@@ -340,7 +320,7 @@ function generate_draft(start_date,end_date) {
     
     var panel2 = Ext.create('widget.panel', {
         width: 350,
-        height: 350,
+        height: 450,
         collapsible: true,
         renderTo: 'pie_chart_two',
         layout: 'fit',
@@ -353,10 +333,13 @@ function generate_draft(start_date,end_date) {
             shadow: true,
             insetPadding: 60,
             theme: 'Base:gradients',
+            legend: {
+                position: 'bottom'
+            },
             series: [{
                 type: 'pie',
                 field: 'value',
-                showInLegend: false,
+                showInLegend: true,
                 tips: {
                   trackMouse: true,
                   width: 140,
@@ -379,7 +362,22 @@ function generate_draft(start_date,end_date) {
                     field: 'name',
                     display: 'rotate',
                     contrast: true,
-                    font: '18px Arial'
+                    font: '18px Arial',
+                	renderer: function(v) {
+	            		var gCount = 0;
+	                	var total = 0;
+	                	faculty_student_count_store.each(function(rec) {
+	                    	total += rec.get('value');
+	                    });
+	
+	                	faculty_student_count_store.each(function(rec) {
+	                    	if(rec.get('name') == v) {
+	                    		gCount = Math.round(rec.get('value') / total * 100) + '%';
+	                    	}
+	                    });
+	               
+	            		return gCount;
+	            	}
                 }
             }]
         }
@@ -422,7 +420,7 @@ function generate_draft(start_date,end_date) {
     
     var panel3 = Ext.create('widget.panel', {
         width: 350,
-        height: 350,
+        height: 450,
         collapsible: true,
         renderTo: 'pie_chart_three',
         layout: 'fit',
@@ -435,10 +433,13 @@ function generate_draft(start_date,end_date) {
             shadow: true,
             insetPadding: 60,
             theme: 'Base:gradients',
+            legend: {
+                position: 'bottom'
+            },
             series: [{
                 type: 'pie',
                 field: 'value',
-                showInLegend: false,
+                showInLegend: true,
                 tips: {
                   trackMouse: true,
                   width: 140,
@@ -446,8 +447,8 @@ function generate_draft(start_date,end_date) {
                   renderer: function(storeItem, item) {
                     //calculate percentage.
                     var total = 0;
-                    faculty_student_count_store.each(function(rec) {
-                        total += rec.get('value');
+                    compromise_type_store.each(function(rec) {
+                        total += parseInt(rec.get('value')); //storage of the value should NOT be a string
                     });
                     this.setTitle(storeItem.get('name') + ': ' + Math.round(storeItem.get('value') / total * 100) + '%');
                   }
@@ -461,7 +462,22 @@ function generate_draft(start_date,end_date) {
                     field: 'name',
                     display: 'rotate',
                     contrast: true,
-                    font: '18px Arial'
+                    font: '18px Arial',
+                	renderer: function(v) {
+                		var gCount = 0;
+                    	var total = 0;
+                    	compromise_type_store.each(function(rec) {
+                        	total += parseInt(rec.get('value'));
+                        });
+
+                    	compromise_type_store.each(function(rec) {
+                        	if(rec.get('name') == v) {
+                        		gCount = Math.round(parseInt(rec.get('value')) / total * 100) + '%';
+                        	}
+                        });
+                   
+                		return gCount;
+                	}
                 }
             }]
         }

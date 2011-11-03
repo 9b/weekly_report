@@ -49,8 +49,22 @@ def build_report(request):
 			rjson =  json.dumps(item)
 			ruse = json.loads(rjson)
 			details = ruse.get("details")
-			for listing in details:
-				compromise_types_data.append(listing)	
+			if type(details) is not list:
+				obj = { "name": details.get("name"), "value":details.get("value"), "key":details.get("key") }
+				compromise_types_data.append(obj)		
+			else:
+				for listing in details:
+					compromise_types_data.append(listing)	
+				
+		# average response time
+		response_time_data = []
+		response_time_con = connect_to_mongo('127.0.0.1',27017, "weekly_report", "average_response_time")
+		for item in response_time_con.find({"_id":key},{"_id":0}):
+			rjson =  json.dumps(item)
+			ruse = json.loads(rjson)
+			details = ruse.get("details")
+			obj = { "name": details.get("name"), "value":details.get("value"), "key":details.get("key") }
+			response_time_data.append(obj)	
 				
 		# historical data
 		historical_compromise_data = []
@@ -69,6 +83,7 @@ def build_report(request):
 				"compromise_details": { "compromise_listings":compromise_details_data, "summary_notes": "" },
 				"compromise_types": { "type_listings":compromise_types_data, "summary_notes": "" },
 				"historical_compromises": { "historical_listings":historical_compromise_data, "summary_notes": "" },
+				"response_time":{ "average_response_time":response_time_data, "summary_notes": "" }
 		}
 		
 		final = { "_id":key, "report": obj }
@@ -80,6 +95,7 @@ def build_report(request):
 		details_con.remove()
 		types_con.remove()
 		historical_con.remove()
+		response_time_con.remove()
 		
 		out['success'] = True
 		mimetype = 'application/javascript'

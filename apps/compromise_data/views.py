@@ -108,6 +108,39 @@ def get_compromise_details(request):
 	else:
 		out['error'] = "Attempting to travel time with the dates you supplied. Check back last week."
 		return render_to_response("error.html",out,context_instance=RequestContext(request))
+		
+def get_average_response_time_counts(request):
+	out = { 'results':{},'error':{},'session':{}, 'success': False }
+	
+	start_date = request.GET.get('start_date')
+	end_date = request.GET.get('end_date')
+	
+	if check_report_date(start_date) and check_report_date(end_date):
+		start_parts = start_date.split("/")
+		end_parts = end_date.split("/")
+		start_date = start_parts[2] + "-" + start_parts[0]  + "-" + start_parts[1]
+		end_date = end_parts[2] + "-" + end_parts[0]  + "-" + end_parts[1]
+		key = start_parts[0] + start_parts[1] + start_parts[2] + end_parts[0] + end_parts[1] + end_parts[2]
+		
+		con = connect_to_mysql("128.164.80.81","dragonslayer","slayer","dragonslayer")
+		cursor = con.cursor ()
+		stmt = "select AVG(TIME_TO_SEC(TIMEDIFF(tdstamp, discovered))) * 0.000277777778 as delta from gwcases where date(tdstamp) BETWEEN '" + start_date + "' AND '" + end_date + "' AND report_category > 1" 
+		cursor.execute(stmt)
+		row = cursor.fetchone()
+		avg_resp = round(row[0],2)
+		
+		tmp = { 'name':"Average Response",
+				'value':str(avg_resp), 
+				'key':key
+		}
+		
+		out['results'] = tmp
+		out['success'] = True
+		mimetype = 'application/javascript'
+		return HttpResponse(json.dumps(out),mimetype)
+	else:
+		out['error'] = "Attempting to travel time with the dates you supplied. Check back last week."
+		return render_to_response("error.html",out,context_instance=RequestContext(request))
 	
 def get_normal_graph_counts(request):
 	out = { 'results':{},'error':{},'session':{}, 'success': False }
@@ -287,6 +320,22 @@ def set_compromise_details(request):
 	return HttpResponse(json.dumps(out),mimetype)	
 	
 @csrf_exempt
+def set_average_response_times(request):
+	out = { 'results':{},'error':{},'session':{}, 'success': False }
+	
+	key = None
+	objs = json.loads(request.raw_post_data)
+	key = objs.get("key")
+		
+	con = connect_to_mongo('127.0.0.1',27017, "weekly_report", "average_response_time")
+	obj = { "_id": key, "details": objs }
+	con.insert(obj)
+	
+	out['success'] = True
+	mimetype = 'application/javascript'
+	return HttpResponse(json.dumps(out),mimetype)	
+	
+@csrf_exempt
 def set_normal_graph_counts(request):
 	out = { 'results':{},'error':{},'session':{}, 'success': False }
 	
@@ -388,6 +437,28 @@ def get_stored_compromise_details(request):
 		out['success'] = False
 		out['error'] = "Invalid key in request."
 		return render_to_response("error.html",out,context_instance=RequestContext(request))	
+		
+def get_stored_average_response_time(request):
+	out = { 'results':{},'error':{},'session':{}, 'success': False }
+	con = connect_to_mongo('127.0.0.1',27017, "weekly_report", "complete_reports")
+	key = None
+	key = str(request.GET['key'])
+	if check_report_id(key):
+		key = str(request.GET['key'])
+		data = con.find_one({"_id":key},{"report.response_time":1,"_id":0})
+		rjson =  json.dumps(data)
+		ruse = json.loads(rjson)
+		report = ruse.get("report")
+		response_time = report.get("response_time")
+		average_response_time = response_time.get("average_response_time")
+		out['success'] = True
+		out['results'] = average_response_time
+		mimetype = 'application/javascript'
+		return HttpResponse(json.dumps(out),mimetype)
+	else:
+		out['success'] = False
+		out['error'] = "Invalid key in request."
+		return render_to_response("error.html",out,context_instance=RequestContext(request))
 	
 def get_stored_normal_counts(request):
 	out = { 'results':{},'error':{},'session':{}, 'success': False }

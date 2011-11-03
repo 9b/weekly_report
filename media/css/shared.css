@@ -36,6 +36,16 @@ h1.title {
 	color:f9b82a;
 }
 
+h1.response_content {
+	text-align: center;
+	color: black;	
+    position: absolute;
+    top: 45%;
+    left: 50%;
+    margin-left: -70px;
+   	font: 30px normal Arial, Helvetica, sans-serif;	
+}
+
 h1.toolbox {
 	text-align: center;
 	font: 20px normal Arial, Helvetica, sans-serif;	

@@ -7,6 +7,7 @@ function render_commit(id) {
 			faculty_student_count_store.sync();
 			compromise_type_store.sync();
 			historical_data_store.sync();
+			avg_response_time_store.sync();
 			
 			Ext.Ajax.request({
 			    url: '/build_report/',
@@ -19,7 +20,7 @@ function render_commit(id) {
 			    }
 			});
 			
-//			window.location = "/report/" + id;
+			window.location = "/report/" + id;
 	    },
 	    renderTo:'commit_action'
 	});

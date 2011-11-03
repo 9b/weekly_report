@@ -207,26 +207,27 @@ Ext.onReady(function(){
     
     //Chart Definition
     
-    Ext.define('WeeklyReport.Visual.Reporting.Chart.Patchlink.Model', {
+    Ext.define('WeeklyReport.Visual.Reporting.Chart.ResponseTime.Model', {
         extend: 'Ext.data.Model',
         fields: [
-            'name',
-            'value',
+             'name',
+             'value',
+             'key'
         ]
     });
     
-    var patchy_count_store = Ext.create('Ext.data.Store', {
-        model: 'WeeklyReport.Visual.Reporting.Chart.Patchlink.Model',
+    var avg_response_time_store = Ext.create('Ext.data.Store', {
+        model: 'WeeklyReport.Visual.Reporting.Chart.ResponseTime.Model',
         autoLoad: true,
 
         proxy: {
             type: 'ajax',
             api: {
-//                read: 'controls/drafting/get_patchlink_counts.php?start_date='+ start_date + '&end_date='+end_date,
+            	read: '/get_stored_average_response_time/?key=' + key,
             },
             reader: {
                 type: 'json',
-                root: 'data',
+                root: 'results',
                 successProperty: 'success'
             }
         },
@@ -236,52 +237,28 @@ Ext.onReady(function(){
     	}]
     });
 
-//    var panel1 = Ext.create('widget.panel', {
-//        width: 350,
-//        height: 350,
-//        collapsible: true,
-//        renderTo: 'pie_chart_one',
-//        layout: 'fit',
-//        title: "Patchy/Non-Patchy",
-//        items: {
-//            xtype: 'chart',
-//            id: 'pie_chart_one',
-//            animate: true,
-//            store: patchy_count_store,
-//            shadow: true,
-//            insetPadding: 60,
-//            theme: 'Base:gradients',
-//            series: [{
-//                type: 'pie',
-//                field: 'value',
-//                showInLegend: false,
-//                tips: {
-//                  trackMouse: true,
-//                  width: 140,
-//                  height: 28,
-//                  renderer: function(storeItem, item) {
-//                    //calculate percentage.
-//                    var total = 0;
-//                    patchy_count_store.each(function(rec) {
-//                        total += rec.get('value');
-//                    });
-//                    this.setTitle(storeItem.get('name') + ': ' + Math.round(storeItem.get('value') / total * 100) + '%');
-//                  }
-//                },
-//                highlight: {
-//                  segment: {
-//                    margin: 20
-//                  }
-//                },
-//                label: {
-//                    field: 'name',
-//                    display: 'rotate',
-//                    contrast: true,
-//                    font: '18px Arial'
-//                }
-//            }]
-//        }
-//    });
+    var imageTpl = new Ext.XTemplate(
+		'<tpl for=".">',
+        	'<h1 class="response_content">{value} Hours</h1>',
+	    '</tpl>'
+	);
+    
+    var average_response_time = new Ext.create('Ext.view.View', {
+        store: avg_response_time_store,
+        tpl: imageTpl,
+        itemSelector: 'div.thumb-wrap',
+        emptyText: 'No images available',
+    });
+
+    var panel1 = Ext.create('widget.panel', {
+        width: 350,
+        height: 450,
+        collapsible: true,
+        renderTo: 'pie_chart_one',
+        layout: 'fit',
+        title: 'Average Response Time',
+        items: [average_response_time]
+    });
     
     Ext.define('WeeklyReport.Visual.Reporting.Chart.StudentFaculty.Model', {
         extend: 'Ext.data.Model',
@@ -314,7 +291,7 @@ Ext.onReady(function(){
     });
     
     var panel2 = Ext.create('widget.panel', {
-        width: 450,
+        width: 350,
         height: 450,
         collapsible: true,
         renderTo: 'pie_chart_two',
@@ -412,7 +389,7 @@ Ext.onReady(function(){
     });
 
     var panel3 = Ext.create('widget.panel', {
-        width: 450,
+        width: 350,
         height: 450,
         collapsible: true,
         renderTo: 'pie_chart_three',
