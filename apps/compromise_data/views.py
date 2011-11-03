@@ -124,7 +124,7 @@ def get_average_response_time_counts(request):
 		
 		con = connect_to_mysql("128.164.80.81","dragonslayer","slayer","dragonslayer")
 		cursor = con.cursor ()
-		stmt = "select AVG(TIME_TO_SEC(TIMEDIFF(tdstamp, discovered))) * 0.000277777778 as delta from gwcases where date(tdstamp) BETWEEN '" + start_date + "' AND '" + end_date + "' AND report_category > 1" 
+		stmt = "select AVG(TIME_TO_SEC(TIMEDIFF(tdstamp, discovered))) * 0.000277777778 as delta from gwcases where date(tdstamp) BETWEEN '" + start_date + "' AND '" + end_date + "' AND report_category > 1 AND TIME_TO_SEC(TIMEDIFF(tdstamp,discovered)) > 0" 
 		cursor.execute(stmt)
 		row = cursor.fetchone()
 		avg_resp = round(row[0],2)
