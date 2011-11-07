@@ -39,8 +39,13 @@ def build_report(request):
 			rjson =  json.dumps(item)
 			ruse = json.loads(rjson)
 			details = ruse.get("details")
-			for listing in details:
-				compromise_details_data.append(listing)
+			if type(details) is not list:
+				obj = { "ip_address": details.get("ip_address"), "compromise_notes": details.get("compromise_notes"), "key": details.get("key"), "original_notes": details.get("original_notes"), "school_department": details.get("school_department"), "time_of_compromise": details.get("time_of_compromise") }
+				compromise_details_data.append(obj)
+			else:
+				for listing in details:
+					compromise_details_data.append(listing)
+				
 	
 		# compromise types
 		compromise_types_data = []
