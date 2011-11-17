@@ -11,17 +11,14 @@ handler500 = 'weekly_report.apps.util.views.handle_error'
 urlpatterns = patterns('',
     # pages
     (r'^admin/', include(admin.site.urls)),
-#    (r'^login/$', direct_to_template, {'template': 'auth/login.html'}),
-#    (r'^register/$', direct_to_template, {'template': 'register/register.html'}),
-#    (r'^$', direct_to_template, {'template': 'core/index.html'}),
 
     (r'^$', 'weekly_report.apps.util.views.captured_login'),
     (r'^report/$', 'weekly_report.apps.util.views.created_reports'),
-    (r'^generate/$', direct_to_template, {'template': 'generate.html'}),
+    (r'^generate/$', 'weekly_report.apps.util.views.generate_report'),
 
     # processing
     (r'^register_period/$', 'weekly_report.apps.meta.views.store_data'),  
-    (r'^process/$', 'weekly_report.apps.util.process_auth'),    
+    (r'^process/$', 'weekly_report.apps.accounts.views.ext_login'),    
     
     # fetch data
     (r'^get_compromise_counts/$', 'weekly_report.apps.compromise_data.views.get_compromise_counts'), 
@@ -47,7 +44,7 @@ urlpatterns = patterns('',
     (r'^set_historical_compromises/$', 'weekly_report.apps.compromise_data.views.set_historical_compromises'),  
     
     # reports
-    url(r'^report/(?P<rid>\w+)/$', 'weekly_report.apps.builder.views.fetch_report', {'template_name': 'report.html'}, name='report'),   
+    (r'^report/(?P<rid>\w+)/$', 'weekly_report.apps.builder.views.fetch_report', {'template_name': 'report.html'}, name='report'),   
     
     # aggregate all sources
     (r'^build_report/$', 'weekly_report.apps.builder.views.build_report'),      

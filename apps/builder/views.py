@@ -15,7 +15,7 @@ import simplejson as json
 import pymongo
 
 from weekly_report.apps.util.views import connect_to_mysql, connect_to_mongo
-from weekly_report.apps.watchdog.views import check_report_id
+from weekly_report.apps.watchdog.views import check_report_id, is_auth
 
 @csrf_exempt
 def build_report(request):
@@ -112,20 +112,24 @@ def build_report(request):
 def fetch_report(request,rid,template_name):
 	out = { 'results':{},'error':{},'session':{}, 'success': False }
 	reports = []
-	if check_report_id(rid):
-		con = connect_to_mongo('127.0.0.1',27017, "weekly_report", "complete_reports")
-		data = con.find_one({"_id":rid},{"report.metadata":1})
-		rjson =  json.dumps(data)
-		ruse = json.loads(rjson)
-		report = ruse.get("report")
-		metadata = report.get("metadata")
-		start_date = metadata.get("start_week")
-		end_date = metadata.get("end_week")
-		obj = { "start_date":start_date,"end_date":end_date }
 	
-		out['results'] = obj
-		out['success'] = True
-		return render_to_response(template_name,out,context_instance=RequestContext(request))
+	if is_auth(request):
+		if check_report_id(rid):
+			con = connect_to_mongo('127.0.0.1',27017, "weekly_report", "complete_reports")
+			data = con.find_one({"_id":rid},{"report.metadata":1})
+			rjson =  json.dumps(data)
+			ruse = json.loads(rjson)
+			report = ruse.get("report")
+			metadata = report.get("metadata")
+			start_date = metadata.get("start_week")
+			end_date = metadata.get("end_week")
+			obj = { "start_date":start_date,"end_date":end_date }
+		
+			out['results'] = obj
+			out['success'] = True
+			return render_to_response(template_name,out,context_instance=RequestContext(request))
+		else:
+			out['error'] = "Warning: mysql_query() [function.mysql-query]: Unable to save result set in /var/www/production/save.php on line 29"
+			return render_to_response("error.html",out,context_instance=RequestContext(request))
 	else:
-		out['error'] = "Warning: mysql_query() [function.mysql-query]: Unable to save result set in /var/www/production/save.php on line 29"
-		return render_to_response("error.html",out,context_instance=RequestContext(request))
+		return render_to_response('login.html',out,context_instance=RequestContext(request))

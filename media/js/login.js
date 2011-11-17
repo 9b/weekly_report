@@ -16,6 +16,8 @@ Ext.require([
      'Ext.Window',
      'Ext.Action',
      'Ext.button.Button',
+     'Ext.decode.*',
+     'Ext.Msg.*'
 ]);
 
 Ext.onReady(function(){
@@ -37,8 +39,8 @@ Ext.onReady(function(){
         },
 
         items: [{
-            fieldLabel: 'Username',
-            name: 'username',
+            fieldLabel: 'NetID',
+            name: 'netid',
             allowBlank:false
         },{
             fieldLabel: 'Password',
@@ -56,10 +58,16 @@ Ext.onReady(function(){
                     clientValidation: true,
                     url: '/process/',
                     success: function(form, action) {
-                       //...
+                    	window.location = "/report/";
                     },
                     failure: function(form, action) {
-                        //...
+                    	if(action.failureType == 'server') { 
+	                    	obj = Ext.decode(action.response.responseText); 
+	                        Ext.Msg.alert('Login Failed!', obj.error); 
+                    	} else {
+                        	Ext.Msg.alert('Warning!', 'Authentication server is unreachable');	
+                        }
+                    	login.getForm().reset(); 
                     }
                 });
             }

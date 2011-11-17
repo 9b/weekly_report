@@ -28,3 +28,14 @@ def check_report_date(date):
 			
 	check_result = True
 	return check_result
+	
+def is_auth(request):
+	try:
+		logged = request.session['logged']
+	except:
+		logged = None
+	
+	if request.user.is_anonymous() and logged == None:
+		return False
+	else:
+		return True
