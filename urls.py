@@ -44,7 +44,7 @@ urlpatterns = patterns('',
     (r'^set_historical_compromises/$', 'weekly_report.apps.compromise_data.views.set_historical_compromises'),  
     
     # reports
-    (r'^report/(?P<rid>\w+)/$', 'weekly_report.apps.builder.views.fetch_report', {'template_name': 'report.html'}, name='report'),   
+    url(r'^report/(?P<rid>\w+)/$', 'weekly_report.apps.builder.views.fetch_report', {'template_name': 'report.html'}, name='report'),   
     
     # aggregate all sources
     (r'^build_report/$', 'weekly_report.apps.builder.views.build_report'),      

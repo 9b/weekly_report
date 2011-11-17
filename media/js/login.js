@@ -17,7 +17,8 @@ Ext.require([
      'Ext.Action',
      'Ext.button.Button',
      'Ext.decode.*',
-     'Ext.Msg.*'
+     'Ext.Msg.*',
+     'Ext.EventObject.*'
 ]);
 
 Ext.onReady(function(){
@@ -35,7 +36,30 @@ Ext.onReady(function(){
         },
         defaultType: 'textfield',
         defaults: {
-            anchor: '100%'
+            anchor: '100%',
+            listeners: {
+                specialkey: function(field, e){
+                    if (e.getKey() == e.ENTER) {
+                    	var form = this.up('form').getForm();
+                        form.submit({
+                            clientValidation: true,
+                            url: '/process/',
+                            success: function(form, action) {
+                            	window.location = "/report/";
+                            },
+                            failure: function(form, action) {
+                            	if(action.failureType == 'server') { 
+        	                    	obj = Ext.decode(action.response.responseText); 
+        	                        Ext.Msg.alert('Login Failed!', obj.error); 
+                            	} else {
+                                	Ext.Msg.alert('Warning!', 'Authentication server is unreachable');	
+                                }
+                            	login.getForm().reset(); 
+                            }
+                        });
+                    }
+                }
+            },
         },
 
         items: [{
@@ -71,6 +95,7 @@ Ext.onReady(function(){
                     }
                 });
             }
-        }]
+        }],
+
     });
 });

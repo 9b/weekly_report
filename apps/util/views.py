@@ -60,10 +60,11 @@ def created_reports(request):
 		
 def generate_report(request):
 	out = { 'results':{},'error':{},'session':{}, 'success': False }
-	if is_auth(request):
+	if is_auth(request,True):
 		return render_to_response('generate.html',out,context_instance=RequestContext(request))
 	else:
-		return render_to_response('login.html',out,context_instance=RequestContext(request))
+		out['error'] = "Access denied"
+		return render_to_response('error.html',out,context_instance=RequestContext(request))
 	
 def captured_login(request):
 	out = { 'results':{},'error':{},'session':{}, 'success': False }

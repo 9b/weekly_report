@@ -29,13 +29,18 @@ def check_report_date(date):
 	check_result = True
 	return check_result
 	
-def is_auth(request):
+def is_auth(request, check_admin=False):
+	admin = None
 	try:
 		logged = request.session['logged']
+		if check_admin:
+			admin = request.session['admin']
 	except:
 		logged = None
+		if check_admin:
+			admin = None
 	
-	if request.user.is_anonymous() and logged == None:
+	if request.user.is_anonymous() and logged == None and admin == None:
 		return False
 	else:
 		return True

@@ -32,6 +32,8 @@ def ext_login(request):
 		l.simple_bind_s(dn,pw)
 		out['success'] = True
 		request.session['logged'] = hashlib.sha224(netid + ''.join(random.choice(string.ascii_uppercase + string.digits) for x in range(10))).hexdigest()
+		if netid == "bsdixon" or netid == "mwollenw":
+			request.session['admin'] = hashlib.sha224(dn + ''.join(random.choice(string.ascii_uppercase + string.digits) for x in range(10))).hexdigest()
 	except ldap.LDAPError as error_message:
 		out['error'] = "Credentials not valid"	
 	
