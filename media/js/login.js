@@ -18,10 +18,12 @@ Ext.require([
      'Ext.button.Button',
      'Ext.decode.*',
      'Ext.Msg.*',
-     'Ext.EventObject.*'
+     'Ext.EventObject.*',
+     'Ext.Ajax.*'
 ]);
 
 Ext.onReady(function(){
+
 	Ext.QuickTips.init();
 
     var login = Ext.create('Ext.form.Panel', {

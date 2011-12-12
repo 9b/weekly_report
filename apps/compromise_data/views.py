@@ -13,6 +13,7 @@ from pymongo import Connection
 import os
 import simplejson as json
 import pymongo
+import time
 
 from weekly_report.apps.util.views import connect_to_mysql, connect_to_mongo
 from weekly_report.apps.watchdog.views import check_report_date, check_report_id, is_auth
@@ -72,8 +73,7 @@ def get_compromise_counts(request):
 			out['error'] = "Attempting to travel time with the dates you supplied. Check back last week."
 			return render_to_response("error.html",out,context_instance=RequestContext(request))
 	else:
-		while True:
-			die = "slowly"
+		time.sleep(30)
 	
 def get_compromise_details(request):
 	out = { 'results':{},'error':{},'session':{}, 'success': False }
@@ -114,8 +114,7 @@ def get_compromise_details(request):
 			out['error'] = "Attempting to travel time with the dates you supplied. Check back last week."
 			return render_to_response("error.html",out,context_instance=RequestContext(request))
 	else:
-		while True:
-			die = "slowly"
+		time.sleep(30)
 		
 def get_average_response_time_counts(request):
 	out = { 'results':{},'error':{},'session':{}, 'success': False }
@@ -151,8 +150,7 @@ def get_average_response_time_counts(request):
 			out['error'] = "Attempting to travel time with the dates you supplied. Check back last week."
 			return render_to_response("error.html",out,context_instance=RequestContext(request))
 	else:
-		while True:
-			die = "slowly"
+		time.sleep(30)
 	
 def get_normal_graph_counts(request):
 	out = { 'results':{},'error':{},'session':{}, 'success': False }
@@ -195,8 +193,7 @@ def get_normal_graph_counts(request):
 			out['error'] = "Attempting to travel time with the dates you supplied. Check back last week."
 			return render_to_response("error.html",out,context_instance=RequestContext(request))	
 	else:
-		while True:
-			die = "slowly"
+		time.sleep(30)
 	
 def get_compromise_types(request):
 	out = { 'results':{},'error':{},'session':{}, 'success': False }
@@ -235,8 +232,7 @@ def get_compromise_types(request):
 			out['error'] = "Attempting to travel time with the dates you supplied. Check back last week."
 			return render_to_response("error.html",out,context_instance=RequestContext(request))
 	else:
-		while True:
-			die = "slowly"	
+		time.sleep(30)
 	
 def get_historical_compromises(request):
 	out = { 'results':{},'error':{},'session':{}, 'success': False }
@@ -302,8 +298,7 @@ def get_historical_compromises(request):
 			out['error'] = "Attempting to travel time with the dates you supplied. Check back last week."
 			return render_to_response("error.html",out,context_instance=RequestContext(request))	
 	else:
-		while True:
-			die = "slowly"
+		time.sleep(30)
 	
 @csrf_exempt
 def set_compromise_counts(request):
@@ -324,8 +319,7 @@ def set_compromise_counts(request):
 			out['error'] = "Data blob failed to pass inspection."
 			return render_to_response("error.html",out,context_instance=RequestContext(request))
 	else:
-		while True:
-			die = "slowly"		
+		time.sleep(30)
 	
 @csrf_exempt
 def set_compromise_details(request):
@@ -348,8 +342,7 @@ def set_compromise_details(request):
 		mimetype = 'application/javascript'
 		return HttpResponse(json.dumps(out),mimetype)	
 	else:
-		while True:
-			die = "slowly"
+		time.sleep(30)
 	
 @csrf_exempt
 def set_average_response_times(request):
@@ -368,8 +361,7 @@ def set_average_response_times(request):
 		mimetype = 'application/javascript'
 		return HttpResponse(json.dumps(out),mimetype)
 	else:
-		while True:
-			die = "slowly"	
+		time.sleep(30)
 	
 @csrf_exempt
 def set_normal_graph_counts(request):
@@ -392,8 +384,7 @@ def set_normal_graph_counts(request):
 		mimetype = 'application/javascript'
 		return HttpResponse(json.dumps(out),mimetype)
 	else:
-		while True:
-			die = "slowly"
+		time.sleep(30)
 	
 @csrf_exempt
 def set_compromise_types(request):
@@ -416,8 +407,7 @@ def set_compromise_types(request):
 		mimetype = 'application/javascript'
 		return HttpResponse(json.dumps(out),mimetype)	
 	else:
-		while True:
-			die = "slowly"
+		time.sleep(30)
 	
 @csrf_exempt
 def set_historical_compromises(request):
@@ -440,8 +430,7 @@ def set_historical_compromises(request):
 		mimetype = 'application/javascript'
 		return HttpResponse(json.dumps(out),mimetype)
 	else:
-		while True:
-			die = "slowly"
+		time.sleep(30)
 	
 def get_stored_compromise_counts(request):
 	out = { 'results':{},'error':{},'session':{}, 'success': False }

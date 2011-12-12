@@ -17,10 +17,11 @@ function render_commit(id) {
 			    success: function(response){
 			        var text = response.responseText;
 			        // process server response here
+					window.location = "/report/" + id;
 			    }
 			});
 			
-			window.location = "/report/" + id;
+//			window.location = "/report/" + id;
 	    },
 	    renderTo:'commit_action'
 	});

@@ -16,6 +16,7 @@ Ext.require([
     'Ext.Window',
     'Ext.Action',
     'Ext.button.Button',
+    'Ext.Ajax.*'
 ]);
 
 Ext.onReady(function(){
