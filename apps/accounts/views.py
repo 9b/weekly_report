@@ -35,7 +35,7 @@ def ext_login(request):
 	try:
 		l.simple_bind_s(dn,pw)
 		out['success'] = True
-		request.session.set_expiry(300)
+		request.session.set_expiry(900)
 		request.session['logged'] = hashlib.sha224(netid + ''.join(random.choice(string.ascii_uppercase + string.digits) for x in range(10))).hexdigest()
 		if netid == "bsdixon" or netid == "mwollenw" or netid == "sechigh":
 			request.session['admin'] = hashlib.sha224(dn + ''.join(random.choice(string.ascii_uppercase + string.digits) for x in range(10))).hexdigest()
