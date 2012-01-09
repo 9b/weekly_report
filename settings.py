@@ -1,8 +1,8 @@
 import os
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
-DEBUG = True
-TEMPLATE_DEBUG = DEBUG
+DEBUG = False
+TEMPLATE_DEBUG = False
 
 ADMINS = (
 	('Brandon Dixon', 'bsdixon@gwu.edu'),
@@ -21,7 +21,18 @@ DATABASES = {
     }
 }
 
+#ldap server settings
 LDAP_SERVER = "ldaps://128.164.131.10:636"
+
+#mysql remote connect
+MYSQL_HOST = "128.164.80.81"
+MYSQL_USER = "dragonslayer"
+MYSQL_PASS = "slayer"
+MYSQL_DB = "dragonslayer"
+
+#secure cookies
+SESSION_COOKIE_HTTPONLY = True
+SESSION_COOKIE_SECURE = True
 
 # Local time zone for this installation. Choices can be found here:
 # http://en.wikipedia.org/wiki/List_of_tz_zones_by_name

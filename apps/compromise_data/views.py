@@ -34,7 +34,8 @@ def get_compromise_counts(request):
 			end_date = end_parts[2] + "-" + end_parts[0]  + "-" + end_parts[1]
 			key = start_parts[0] + start_parts[1] + start_parts[2] + end_parts[0] + end_parts[1] + end_parts[2]
 			
-			con = connect_to_mysql("128.164.80.81","dragonslayer","slayer","dragonslayer")
+#			con = connect_to_mysql(settings.MYSQL_HOST,settings.MYSQL_USER,settings.MYSQL_PASS,settings.MYSQL_DB)
+			con = connect_to_mysql("128.164.80.81","dragonslayer","slayer","dragonslayer")				
 			cursor = con.cursor ()
 			stmt = "SELECT COUNT(*) as count FROM gwcases WHERE DATE(tdstamp) BETWEEN '" + start_date + "' AND '" + end_date + "' AND report_category > 1" 
 			cursor.execute(stmt)
@@ -437,134 +438,152 @@ def get_stored_compromise_counts(request):
 	con = connect_to_mongo('127.0.0.1',27017, "weekly_report", "complete_reports")
 	key = None
 	key = str(request.GET['key'])
-	if check_report_id(key):
-		key = str(request.GET['key'])
-		data = con.find_one({"_id":key},{"report.compromise_counts":1,"_id":0})
-		rjson =  json.dumps(data)
-		ruse = json.loads(rjson)
-		report = ruse.get("report")
-		compromise_counts = report.get("compromise_counts")
-		out['success'] = True
-		out['compromise_counts'] = compromise_counts
-		mimetype = 'application/javascript'
-		return HttpResponse(json.dumps(out),mimetype)
+	if is_auth(request,True):
+		if check_report_id(key):
+			key = str(request.GET['key'])
+			data = con.find_one({"_id":key},{"report.compromise_counts":1,"_id":0})
+			rjson =  json.dumps(data)
+			ruse = json.loads(rjson)
+			report = ruse.get("report")
+			compromise_counts = report.get("compromise_counts")
+			out['success'] = True
+			out['compromise_counts'] = compromise_counts
+			mimetype = 'application/javascript'
+			return HttpResponse(json.dumps(out),mimetype)
+		else:
+			out['success'] = False
+			out['error'] = "Invalid key in request."
+			return render_to_response("error.html",out,context_instance=RequestContext(request))
 	else:
-		out['success'] = False
-		out['error'] = "Invalid key in request."
-		return render_to_response("error.html",out,context_instance=RequestContext(request))
+		time.sleep(30)
 	
 def get_stored_compromise_details(request):
 	out = { 'results':{},'error':{},'session':{}, 'success': False }
 	con = connect_to_mongo('127.0.0.1',27017, "weekly_report", "complete_reports")
 	key = None
 	key = str(request.GET['key'])
-	if check_report_id(key):
-		key = str(request.GET['key'])
-		data = con.find_one({"_id":key},{"report.compromise_details.compromise_listings":1,"_id":0})
-		rjson =  json.dumps(data)
-		ruse = json.loads(rjson)
-		report = ruse.get("report")
-		compromise_details = report.get("compromise_details")
-		compromise_listings = compromise_details.get("compromise_listings")
-		out['success'] = True
-		out['compromise_details'] = compromise_listings
-		mimetype = 'application/javascript'
-		return HttpResponse(json.dumps(out),mimetype)
+	if is_auth(request,True):
+		if check_report_id(key):
+			key = str(request.GET['key'])
+			data = con.find_one({"_id":key},{"report.compromise_details.compromise_listings":1,"_id":0})
+			rjson =  json.dumps(data)
+			ruse = json.loads(rjson)
+			report = ruse.get("report")
+			compromise_details = report.get("compromise_details")
+			compromise_listings = compromise_details.get("compromise_listings")
+			out['success'] = True
+			out['compromise_details'] = compromise_listings
+			mimetype = 'application/javascript'
+			return HttpResponse(json.dumps(out),mimetype)
+		else:
+			out['success'] = False
+			out['error'] = "Invalid key in request."
+			return render_to_response("error.html",out,context_instance=RequestContext(request))	
 	else:
-		out['success'] = False
-		out['error'] = "Invalid key in request."
-		return render_to_response("error.html",out,context_instance=RequestContext(request))	
+		time.sleep(30)
 		
 def get_stored_average_response_time(request):
 	out = { 'results':{},'error':{},'session':{}, 'success': False }
 	con = connect_to_mongo('127.0.0.1',27017, "weekly_report", "complete_reports")
 	key = None
 	key = str(request.GET['key'])
-	if check_report_id(key):
-		key = str(request.GET['key'])
-		data = con.find_one({"_id":key},{"report.response_time":1,"_id":0})
-		rjson =  json.dumps(data)
-		ruse = json.loads(rjson)
-		report = ruse.get("report")
-		response_time = report.get("response_time")
-		average_response_time = response_time.get("average_response_time")
-		out['success'] = True
-		out['results'] = average_response_time
-		mimetype = 'application/javascript'
-		return HttpResponse(json.dumps(out),mimetype)
+	if is_auth(request,True):
+		if check_report_id(key):
+			key = str(request.GET['key'])
+			data = con.find_one({"_id":key},{"report.response_time":1,"_id":0})
+			rjson =  json.dumps(data)
+			ruse = json.loads(rjson)
+			report = ruse.get("report")
+			response_time = report.get("response_time")
+			average_response_time = response_time.get("average_response_time")
+			out['success'] = True
+			out['results'] = average_response_time
+			mimetype = 'application/javascript'
+			return HttpResponse(json.dumps(out),mimetype)
+		else:
+			out['success'] = False
+			out['error'] = "Invalid key in request."
+			return render_to_response("error.html",out,context_instance=RequestContext(request))
 	else:
-		out['success'] = False
-		out['error'] = "Invalid key in request."
-		return render_to_response("error.html",out,context_instance=RequestContext(request))
+		time.sleep(30)
 	
 def get_stored_normal_counts(request):
 	out = { 'results':{},'error':{},'session':{}, 'success': False }
 	con = connect_to_mongo('127.0.0.1',27017, "weekly_report", "complete_reports")
 	key = None
 	key = str(request.GET['key'])
-	if check_report_id(key):
-		tmp = []
-		key = str(request.GET['key'])
-		data = con.find_one({"_id":key},{"report.compromise_counts":1,"_id":0})
-		rjson =  json.dumps(data)
-		ruse = json.loads(rjson)
-		report = ruse.get("report")
-		compromise_counts = report.get("compromise_counts")
-		normal = compromise_counts.get("staff_faculty_count")
-		student = compromise_counts.get("student_count")
-		obj = {"name":"Faculty/Staff","value":normal}
-		tmp.append(obj)
-		obj = {"name":"Student","value":student}
-		tmp.append(obj)
-		out['success'] = True
-		out['results'] = tmp
-		mimetype = 'application/javascript'
-		return HttpResponse(json.dumps(out),mimetype)
+	if is_auth(request,True):
+		if check_report_id(key):
+			tmp = []
+			key = str(request.GET['key'])
+			data = con.find_one({"_id":key},{"report.compromise_counts":1,"_id":0})
+			rjson =  json.dumps(data)
+			ruse = json.loads(rjson)
+			report = ruse.get("report")
+			compromise_counts = report.get("compromise_counts")
+			normal = compromise_counts.get("staff_faculty_count")
+			student = compromise_counts.get("student_count")
+			obj = {"name":"Faculty/Staff","value":normal}
+			tmp.append(obj)
+			obj = {"name":"Student","value":student}
+			tmp.append(obj)
+			out['success'] = True
+			out['results'] = tmp
+			mimetype = 'application/javascript'
+			return HttpResponse(json.dumps(out),mimetype)
+		else:
+			out['success'] = False
+			out['error'] = "Invalid key in request."
+			return render_to_response("error.html",out,context_instance=RequestContext(request))	
 	else:
-		out['success'] = False
-		out['error'] = "Invalid key in request."
-		return render_to_response("error.html",out,context_instance=RequestContext(request))	
+		time.sleep(30)
 	
 def get_stored_compromise_types(request):
 	out = { 'results':{},'error':{},'session':{}, 'success': False }
 	con = connect_to_mongo('127.0.0.1',27017, "weekly_report", "complete_reports")
 	key = None
 	key = str(request.GET['key'])
-	if check_report_id(key):
-		key = str(request.GET['key'])
-		data = con.find_one({"_id":key},{"report.compromise_types.type_listings":1,"_id":0})
-		rjson =  json.dumps(data)
-		ruse = json.loads(rjson)
-		report = ruse.get("report")
-		compromise_types = report.get("compromise_types")
-		type_listings = compromise_types.get("type_listings")
-		out['success'] = True
-		out['type_listings'] = type_listings
-		mimetype = 'application/javascript'
-		return HttpResponse(json.dumps(out),mimetype)
+	if is_auth(request,True):
+		if check_report_id(key):
+			key = str(request.GET['key'])
+			data = con.find_one({"_id":key},{"report.compromise_types.type_listings":1,"_id":0})
+			rjson =  json.dumps(data)
+			ruse = json.loads(rjson)
+			report = ruse.get("report")
+			compromise_types = report.get("compromise_types")
+			type_listings = compromise_types.get("type_listings")
+			out['success'] = True
+			out['type_listings'] = type_listings
+			mimetype = 'application/javascript'
+			return HttpResponse(json.dumps(out),mimetype)
+		else:
+			out['success'] = False
+			out['error'] = "Invalid key in request."
+			return render_to_response("error.html",out,context_instance=RequestContext(request))	
 	else:
-		out['success'] = False
-		out['error'] = "Invalid key in request."
-		return render_to_response("error.html",out,context_instance=RequestContext(request))	
+		time.sleep(30)
 	
 def get_stored_historical_compromises(request):
 	out = { 'results':{},'error':{},'session':{}, 'success': False }
 	con = connect_to_mongo('127.0.0.1',27017, "weekly_report", "complete_reports")
 	key = None
 	key = str(request.GET['key'])
-	if check_report_id(key):
-		key = str(request.GET['key'])
-		data = con.find_one({"_id":key},{"report.historical_compromises.historical_listings":1,"_id":0})
-		rjson =  json.dumps(data)
-		ruse = json.loads(rjson)
-		report = ruse.get("report")
-		historical_compromises = report.get("historical_compromises")
-		historical_listings = historical_compromises.get("historical_listings")
-		out['success'] = True
-		out['historical_listings'] = historical_listings
-		mimetype = 'application/javascript'
-		return HttpResponse(json.dumps(out),mimetype)	
+	if is_auth(request,True):
+		if check_report_id(key):
+			key = str(request.GET['key'])
+			data = con.find_one({"_id":key},{"report.historical_compromises.historical_listings":1,"_id":0})
+			rjson =  json.dumps(data)
+			ruse = json.loads(rjson)
+			report = ruse.get("report")
+			historical_compromises = report.get("historical_compromises")
+			historical_listings = historical_compromises.get("historical_listings")
+			out['success'] = True
+			out['historical_listings'] = historical_listings
+			mimetype = 'application/javascript'
+			return HttpResponse(json.dumps(out),mimetype)	
+		else:
+			out['success'] = False
+			out['error'] = "Invalid key in request."
+			return render_to_response("error.html",out,context_instance=RequestContext(request))		
 	else:
-		out['success'] = False
-		out['error'] = "Invalid key in request."
-		return render_to_response("error.html",out,context_instance=RequestContext(request))		
+		time.sleep(30)

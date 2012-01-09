@@ -24,12 +24,12 @@ def connect_to_mongo(host, port, database, collection):
 	return collection
 	
 def connect_to_mysql(host, user, password, database):
+    out = { 'results':{},'error':{},'session':{}, 'success': False }
     try:
         conn = MySQLdb.connect (host, user, password, database)
         return conn
     except MySQLdb.Error, e:
-        print "Error %d: %s" % (e.args[0], e.args[1])
-        sys.exit(1)
+        out['error'] = "Error %d: %s" % (e.args[0], e.args[1])
         
 def kill_mysql_connection(conn):
     conn.commit()

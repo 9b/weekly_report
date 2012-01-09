@@ -10,11 +10,12 @@ handler500 = 'weekly_report.apps.util.views.handle_error'
 
 urlpatterns = patterns('',
     # pages
-    (r'^admin/', include(admin.site.urls)),
+    #(r'^admin/', include(admin.site.urls)),
 
     (r'^$', 'weekly_report.apps.util.views.captured_login'),
     (r'^report/$', 'weekly_report.apps.util.views.created_reports'),
     (r'^generate/$', 'weekly_report.apps.util.views.generate_report'),
+    (r'^logout/$', 'weekly_report.apps.accounts.views.logout_user'),
 
     # processing
     (r'^register_period/$', 'weekly_report.apps.meta.views.store_data'),  
@@ -52,6 +53,6 @@ urlpatterns = patterns('',
     # serve static files
     (r'^media/(?P<path>.*)$', 'django.views.static.serve',
         {'document_root': os.path.join(settings.BASE_DIR, 'media'),
-         'show_indexes': True}),
+         'show_indexes': False}),
 )
 
