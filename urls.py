@@ -4,6 +4,7 @@ from django.conf import settings
 from django.views.generic.simple import direct_to_template
 from django.contrib import admin
 admin.autodiscover()
+from apps.util import admin_auth
 
 handler404 = 'weekly_report.apps.util.views.handle_error'
 handler500 = 'weekly_report.apps.util.views.handle_error'
