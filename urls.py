@@ -10,7 +10,7 @@ handler500 = 'weekly_report.apps.util.views.handle_error'
 
 urlpatterns = patterns('',
     # pages
-    #(r'^admin/', include(admin.site.urls)),
+    (r'^admin/', include(admin.site.urls)),
 
     (r'^$', 'weekly_report.apps.util.views.captured_login'),
     (r'^report/$', 'weekly_report.apps.util.views.created_reports'),

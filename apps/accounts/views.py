@@ -1,3 +1,4 @@
+from django.contrib.auth.models import User, Group
 from django.core.serializers.json import DjangoJSONEncoder
 from django.http import HttpResponseRedirect
 from django.template import RequestContext
@@ -32,15 +33,26 @@ def ext_login(request):
 	pw = request.POST['password']
 	dn = "uid=" + netid + ",ou=people,dc=gwu,dc=edu"
 	
-	try:
-		l.simple_bind_s(dn,pw)
-		out['success'] = True
-		request.session.set_expiry(900)
-		request.session['logged'] = hashlib.sha224(netid + ''.join(random.choice(string.ascii_uppercase + string.digits) for x in range(10))).hexdigest()
-		if netid == "bsdixon" or netid == "mwollenw" or netid == "sechigh":
-			request.session['admin'] = hashlib.sha224(dn + ''.join(random.choice(string.ascii_uppercase + string.digits) for x in range(10))).hexdigest()
-	except ldap.LDAPError as error_message:
-		out['error'] = "Credentials not valid"	
+	proceed = False #before we do anything, check out the consumers
+	out['error'] = "Not approved to read the report"
+	valid_consumers = User.objects.filter(groups__name='consumers')
+	for reader in valid_consumers:
+		if reader.username == netid:
+			proceed = True
+
+	if proceed:
+		try:
+			l.simple_bind_s(dn,pw)
+			out['success'] = True
+			request.session.set_expiry(900)
+			request.session['logged'] = hashlib.sha224(netid + ''.join(random.choice(string.ascii_uppercase + string.digits) for x in range(10))).hexdigest()
+			valid_admins = User.objects.filter(groups__name='report_admins')
+			for admin in valid_admins:
+				if admin.username == netid:
+					request.session['admin'] = hashlib.sha224(dn + ''.join(random.choice(string.ascii_uppercase + string.digits) for x in range(10))).hexdigest()
+
+		except ldap.LDAPError as error_message:
+			out['error'] = "Credentials not valid"	
 	
 	return HttpResponse(simplejson.dumps(out, cls=DjangoJSONEncoder))
 
